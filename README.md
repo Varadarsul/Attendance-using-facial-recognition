@@ -78,7 +78,7 @@ This project is an automated attendance system developed in **Python**, where at
 ## Screenshots
 
 ### Registration Page
-![Registration Page](screenshots/registration_page.png)
+![Registration Page](screenshots/register student.png)
 
 ### Mark Attendance Page
 ![Mark Attendance Page](screenshots/mark_attendance_page.png)
