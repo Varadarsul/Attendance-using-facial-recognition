@@ -76,8 +76,17 @@ This project is an automated attendance system developed in **Python**, where at
 - Tkinter (usually pre-installed with Python)
 
 ## Screenshots
+## Screenshots
 
-> *(Add screenshots of your GUI: Registration Page, Attendance Marking Page, Attendance Report Page, etc.)*
+### Registration Page
+!(screenshots/lo.png)
+
+### Mark Attendance Page
+!(screenshots/mark_attendance_page.png)
+
+### Attendance Report Page
+!(screenshots/.png)
+
 
 ## Future Improvements
 
