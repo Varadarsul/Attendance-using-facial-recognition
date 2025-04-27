@@ -81,31 +81,31 @@ This project is an automated attendance system developed in **Python**, where at
 ## Screenshots
 
 ### User Management
-![User Management](screenshots/user%20management.png)
+![User Management](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/user%20management.png?raw=true)
 
 ### Admin Panel
-![Admin Panel](screenshots/screenshots/admin%20panel.png)
+![Admin Panel](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/admin%20panel.png?raw=true)
 
 ### Attendance Report
-![Attendance Report](screenshots/attendance%20report.png)
+![Attendance Report](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/attendance%20report.png?raw=true)
 
 ### Input Image
-![Input Image](screenshots/input%20image.png)
+![Input Image](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/input%20image.png?raw=true)
 
 ### Login Page
-![Login Page](screenshots/login.png)
+![Login Page](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/login.png?raw=true)
 
 ### Marked Attendance
-![Marked Attendance](screenshots/marked%20attendance%20of%20input%20image.png)
+![Marked Attendance](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/marked%20attendance%20of%20input%20image.png?raw=true)
 
 ### Register Student
-![Register Student](screenshots/register%20student.png)
+![Register Student](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/register%20student.png?raw=true)
 
 ### Take Attendance
-![Take Attendance](screenshots/take%20attendance.png)
+![Take Attendance](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/take%20attendance.png?raw=true)
 
 ### Upload Image for Marking Attendance
-![Upload Image](screenshots/upload%20image%20for%20marking%20attendance.png)
+![Upload Image](https://github.com/Varadarsul/Attendance-using-facial-recognition/blob/main/upload%20image%20for%20marking%20attendance.png?raw=true)
 
 
 ## Future Improvements
