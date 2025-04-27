@@ -1,5 +1,3 @@
-Sure! Here's a full **README.md** you can use and customize for your **Attendance Using Facial Recognition** project:
-
 ---
 
 # Attendance System Using Facial Recognition
@@ -106,7 +104,4 @@ Attendance-System/
 - [face_recognition library](https://github.com/ageitgey/face_recognition)
 - [OpenCV documentation](https://docs.opencv.org/)
 
----
 
-Would you like me to also create a simple **`requirements.txt`** file that you can include? 🚀  
-It'll make your project look even cleaner!
