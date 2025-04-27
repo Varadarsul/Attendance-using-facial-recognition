@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2;
+            --secondary-color: #2196F3;
+            --accent-color: #64B5F6;
+            --background-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-primary: #2C3E50;
+            --text-secondary: #34495E;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white !important;
+        }
+        
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 10px;
+        }
+        
+        .sidebar {
+            background: var(--card-bg);
+            min-height: calc(100vh - 60px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 1rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+        
+        .main-content {
+            padding: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background: none;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem;
+        }
+        
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+        
+        .table td {
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+        }
+        
+        .camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #video {
+            transform: scaleX(-1); /* Mirror the video */
+        }
+
+        #canvas-overlay {
+            transform: scaleX(-1); /* Mirror the overlay to match video */
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #registerVideo {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .progress {
+            height: 0.5rem;
+        }
+
+        .capture-preview {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .capture-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .capture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">Attendance System</span>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3">Welcome, Teacher</span>
+                <a href="/logout" class="btn btn-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <div class="nav flex-column nav-pills">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#take-attendance">
+                        <i class="bi bi-camera-fill"></i> Take Attendance
+                    </button>
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#upload-attendance">
+                        <i class="bi bi-upload"></i> Upload Attendance
+                    </button>
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#students">
+                        <i class="bi bi-people-fill"></i> Students
+                    </button>
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#activity" onclick="loadActivityData()">
+                        <i class="bi bi-activity"></i> Activity
+                    </button>
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#subjects">
+                        <i class="bi bi-book-fill"></i> Subjects
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                <div class="tab-content">
+                    <!-- Take Attendance Tab -->
+                    <div class="tab-pane fade show active" id="take-attendance">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Take Attendance</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="camera-container">
+                                    <video id="video" autoplay playsinline></video>
+                                    <canvas id="overlay" class="camera-overlay"></canvas>
+                                </div>
+                                <div class="camera-controls">
+                                    <button id="startCamera" class="btn btn-primary">
+                                        <i class="bi bi-camera-video-fill"></i> Start Camera
+                                    </button>
+                                    <button id="stopCamera" class="btn btn-danger" disabled>
+                                        <i class="bi bi-camera-video-off-fill"></i> Stop Camera
+                                    </button>
+                                    <button id="takeAttendance" class="btn btn-success" disabled>
+                                        <i class="bi bi-check-circle-fill"></i> Take Attendance
+                                    </button>
+                                    <div class="dropdown ms-3">
+                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="subjectDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Subject: SMA
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="subjectDropdown">
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="SMA">SMA</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="DC">DC</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="EM">EM</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="DF">DF</a></li>
+                                        </ul>
+                                    </div>
+                                    <select id="subjectSelect" hidden>
+                                        <option value="SMA">SMA</option>
+                                        <option value="DC">DC</option>
+                                        <option value="EM">EM</option>
+                                        <option value="DF">DF</option>
+                                    </select>
+                                </div>
+                                <div id="attendanceResults" class="mt-3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Attendance Tab -->
+                    <div class="tab-pane fade" id="upload-attendance">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Upload Group Photo for Attendance</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="uploadForm" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label class="form-label">Subject</label>
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="uploadSubjectDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Select Subject
+                                            </button>
+                                            <ul class="dropdown-menu w-100">
+                                                <li><a href="#" class="dropdown-item subject-item" data-subject="SMA">SMA</a></li>
+                                                <li><a href="#" class="dropdown-item subject-item" data-subject="DC">DC</a></li>
+                                                <li><a href="#" class="dropdown-item subject-item" data-subject="EM">EM</a></li>
+                                                <li><a href="#" class="dropdown-item subject-item" data-subject="DF">DF</a></li>
+                                            </ul>
+                                        </div>
+                                        <input type="hidden" id="subject" name="subject" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Upload Group Photo</label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-upload"></i> Upload and Process
+                                    </button>
+                                </form>
+                                <div id="uploadResults" class="mt-3" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <h6>Recognition Results:</h6>
+                                        <p>Total faces detected: <span id="totalFaces">0</span></p>
+                                        <p>Recognized students: <span id="recognizedFaces">0</span></p>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Roll No</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recognizedStudents">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Students Tab -->
+                    <div class="tab-pane fade" id="students">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>Student Management</h5>
+                            <span class="badge bg-primary ms-2" id="studentCount">0</span>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <i class="bi bi-person-plus-fill"></i> Register New Student
+                            </button>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Roll No</th>
+                                                <th>Registration Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="studentsList"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Tab -->
+                    <div class="tab-pane fade" id="activity">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title">Activity Log</h5>
+                                <div>
+                                    <input type="date" id="activity-date" class="form-control" onchange="loadActivityData()">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Roll No</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="activity-list"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subjects Log Tab -->
+                    <div class="tab-pane fade" id="subjects">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title">Subject Log</h5>
+                                <div class="d-flex align-items-center">
+                                    <input type="date" id="subject-date" class="form-control" onchange="loadSubjectData()">
+                                    <div class="dropdown ms-3">
+                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Subject: SMA
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="SMA">SMA</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="DC">DC</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="EM">EM</a></li>
+                                            <li><a href="#" class="dropdown-item subject-item" data-subject="DF">DF</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Roll No</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="subject-list"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register New Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <!-- Camera for registration -->
+                        <div class="camera-container mb-3">
+                            <video id="registerVideo" autoplay playsinline></video>
+                            <canvas id="registerOverlay" class="camera-overlay"></canvas>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" id="startRegisterCamera">
+                                <i class="bi bi-camera-video-fill"></i> Start Camera
+                            </button>
+                            <button type="button" class="btn btn-danger" id="stopRegisterCamera" disabled>
+                                <i class="bi bi-camera-video-off-fill"></i> Stop Camera
+                            </button>
+                            <button type="button" class="btn btn-success" id="captureRegisterPhoto" disabled>
+                                <i class="bi bi-check-circle-fill"></i> Capture Photo
+                            </button>
+                        </div>
+                        <input type="hidden" id="registerFrame" name="frame">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="studentName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="studentName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="rollNo" class="form-label">Roll Number</label>
+                                <input type="text" class="form-control" id="rollNo" required>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus-fill"></i> Register Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('activity-date').value = today;
+            // Initialize subject dropdown
+            const subjectSelect = document.getElementById('subjectSelect');
+            const dropdownBtn = document.getElementById('subjectDropdown');
+            if (subjectSelect && dropdownBtn) {
+                dropdownBtn.textContent = `Subject: ${subjectSelect.value}`;
+            }
+            // Initial data load
+            loadStudents();
+            loadActivityData();
+            if (typeof loadSubjectData === 'function') loadSubjectData();
+            // Subject dropdown click handlers
+            document.querySelectorAll('.subject-item').forEach(item => {
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    const subj = item.getAttribute('data-subject');
+                    subjectSelect.value = subj;
+                    dropdownBtn.textContent = `Subject: ${subj}`;
+                    loadSubjectData();
+                });
+            });
+            // Subject dropdown click handlers for upload section
+            document.querySelectorAll('#uploadSubjectDropdown + .dropdown-menu .subject-item').forEach(item => {
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    const subj = item.getAttribute('data-subject');
+                    document.getElementById('uploadSubjectDropdown').textContent = `Subject: ${subj}`;
+                    document.getElementById('subject').value = subj;
+                });
+            });
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('subject', document.getElementById('subject').value);
+            
+            fetch('/upload_attendance', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('totalFaces').textContent = data.total_faces;
+                    document.getElementById('recognizedFaces').textContent = data.recognized_faces;
+                    
+                    const tbody = document.getElementById('recognizedStudents');
+                    tbody.innerHTML = '';
+                    
+                    data.recognized_students.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${student.name}</td>
+                            <td>${student.roll_no}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    document.getElementById('uploadResults').style.display = 'block';
+                    
+                    // Show success toast
+                    showToast('Attendance marked successfully!', 'success');
+                } else {
+                    showToast(data.error || 'Error processing image', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error processing image', 'error');
+            });
+        });
+    </script>
+</body>
+</html>

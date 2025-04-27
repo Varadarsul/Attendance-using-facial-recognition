@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MGM College of Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2;
+            --secondary-color: #2196F3;
+            --accent-color: #64B5F6;
+            --background-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-primary: #2C3E50;
+            --text-secondary: #34495E;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white !important;
+        }
+        
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 10px;
+        }
+        
+        .sidebar {
+            background: var(--card-bg);
+            min-height: calc(100vh - 60px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 1rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+        
+        .main-content {
+            padding: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background: none;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem;
+        }
+        
+        .card-title {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .table {
+            margin: 0;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+        
+        .table td {
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                A C Patil College of Engineering
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3">Welcome, Admin</span>
+                <a href="/teacher_dashboard" class="btn btn-light me-2">
+                    <i class="bi bi-person-badge"></i> Teacher
+                </a>
+                <button class="btn btn-light" onclick="logout()">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#admin-panel">
+                            <i class="bi bi-shield-lock"></i> Admin Panel
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#user-panel">
+                            <i class="bi bi-people"></i> User Panel
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#activity">
+                            <i class="bi bi-activity"></i> Activity
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#percentage">
+                            <i class="bi bi-graph-up"></i> Percentage
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- Admin Panel -->
+                <div id="admin-panel" class="tab-content">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="stat-number">150</div>
+                                <div class="stat-label">Total Students</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="stat-number">25</div>
+                                <div class="stat-label">Total Teachers</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="stat-number">85%</div>
+                                <div class="stat-label">Average Attendance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">Active Classes</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Recent Activities</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>User</th>
+                                            <th>Activity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>10:30 AM</td>
+                                            <td>John Doe</td>
+                                            <td>Marked Attendance</td>
+                                            <td><span class="badge bg-success">Present</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>09:45 AM</td>
+                                            <td>Jane Smith</td>
+                                            <td>Updated Profile</td>
+                                            <td><span class="badge bg-info">Updated</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Panel -->
+                <div id="user-panel" class="tab-content d-none">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">User Management</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="bi bi-plus"></i> Add User
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Role</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>John Doe</td>
+                                            <td>Teacher</td>
+                                            <td>john@example.com</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary me-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Panel -->
+                <div id="activity" class="tab-content d-none">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Student Activity</h5>
+                            <div>
+                                <input type="date" class="form-control" id="activityDate" onchange="loadActivityData()">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Name</th>
+                                            <th>Roll No</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activityList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Percentage Panel -->
+                <div id="percentage" class="tab-content d-none">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Attendance Percentage</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select" id="monthSelect" onchange="loadPercentageData()">
+                                    <option value="">Select Month</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <input type="number" class="form-select" id="yearSelect" value="2024" min="2020" max="2030" onchange="loadPercentageData()">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Roll No</th>
+                                            <th>Total Days</th>
+                                            <th>Present Days</th>
+                                            <th>Percentage</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="percentageList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="newUserName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="newUserEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="newUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="newUserPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" id="newUserRole" required>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Handle tab switching
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                const target = link.getAttribute('href').substring(1);
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('d-none');
+                });
+                document.getElementById(target).classList.remove('d-none');
+            });
+        });
+
+        // Initialize charts
+        function initCharts() {
+            // Activity Chart
+            const activityCtx = document.querySelector('#activity .chart-container').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    datasets: [{
+                        label: 'Student Activity',
+                        data: [65, 59, 80, 81, 56, 55],
+                        borderColor: '#1976D2',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Percentage Chart
+            const percentageCtx = document.querySelector('#percentage .chart-container').getContext('2d');
+            new Chart(percentageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Class A', 'Class B', 'Class C', 'Class D'],
+                    datasets: [{
+                        label: 'Attendance Percentage',
+                        data: [85, 92, 78, 90],
+                        backgroundColor: '#1976D2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Add User functionality
+        function addUser() {
+            const formData = {
+                name: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                username: document.getElementById('newUsername').value,
+                password: document.getElementById('newUserPassword').value,
+                role: document.getElementById('newUserRole').value
+            };
+
+            fetch('/add_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('User added successfully!');
+                    document.getElementById('addUserForm').reset();
+                    bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                    loadUsers();
+                } else {
+                    alert(data.message || 'Error adding user');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding user');
+            });
+        }
+
+        // Function to load users
+        function loadUsers() {
+            fetch('/get_users')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.querySelector('#user-panel table tbody');
+                    tbody.innerHTML = '';
+                    data.users.forEach(user => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${user.name}</td>
+                                <td>${user.role}</td>
+                                <td>${user.email}</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="editUser('${user.username}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.username}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            })
+            .catch(error => console.error('Error loading users:', error));
+        }
+
+        // Delete user function
+        function deleteUser(username) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                fetch('/delete_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('User deleted successfully!');
+                        loadUsers();
+                    } else {
+                        alert(data.message || 'Error deleting user');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting user');
+                });
+            }
+        }
+
+        // Load users when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            initCharts();
+        });
+
+        // Fix the Add User button click event
+        document.querySelector('.card-header .btn-primary').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('addUserModal')).show();
+        });
+
+        // Load activity data
+        function loadActivityData() {
+            const date = document.getElementById('activityDate').value;
+            fetch(`/get_activity?date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('activityList');
+                        tbody.innerHTML = '';
+                        data.activity.forEach(record => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${record.timestamp}</td>
+                                    <td>${record.name}</td>
+                                    <td>${record.roll_no}</td>
+                                    <td><span class="badge bg-success">Present</span></td>
+                                </tr>
+                            `;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading activity:', error));
+        }
+
+        // Load percentage data
+        function loadPercentageData() {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            
+            fetch(`/get_percentage?month=${month}&year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('percentageList');
+                        tbody.innerHTML = '';
+                        data.percentage.forEach(record => {
+                            const percentage = record.percentage;
+                            const statusClass = percentage >= 75 ? 'success' : 
+                                              percentage >= 60 ? 'warning' : 'danger';
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${record.name}</td>
+                                    <td>${record.roll_no}</td>
+                                    <td>${record.total_days}</td>
+                                    <td>${record.present_days}</td>
+                                    <td>${percentage.toFixed(2)}%</td>
+                                    <td><span class="badge bg-${statusClass}">
+                                        ${percentage >= 75 ? 'Good' : 
+                                          percentage >= 60 ? 'Average' : 'Poor'}
+                                    </span></td>
+                                </tr>
+                            `;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading percentages:', error));
+        }
+
+        // Set default date to today for activity
+        document.getElementById('activityDate').valueAsDate = new Date();
+
+        // Set default month and year for percentage
+        const today = new Date();
+        document.getElementById('monthSelect').value = today.getMonth() + 1;
+        document.getElementById('yearSelect').value = today.getFullYear();
+
+        // Load initial data
+        loadActivityData();
+        loadPercentageData();
+    </script>
+</body>
+</html> 

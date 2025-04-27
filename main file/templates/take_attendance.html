@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance - MGM College of Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2;
+            --secondary-color: #2196F3;
+            --accent-color: #64B5F6;
+            --background-color: #F5F7FA;
+        }
+
+        body {
+            background-color: var(--background-color);
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #video {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #canvas-overlay {
+            display: none; /* Hide the canvas overlay since we don't need to draw rectangles */
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .attendance-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Take Attendance</h2>
+        
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas-overlay"></canvas>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startCamera">
+                <i class="bi bi-camera"></i> Start Camera
+            </button>
+            <button class="btn btn-danger" id="stopCamera">
+                <i class="bi bi-stop-circle"></i> Stop Camera
+            </button>
+            <button class="btn btn-success" id="takeAttendance">
+                <i class="bi bi-check-circle"></i> Take Attendance
+            </button>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Today's Attendance</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="updateAttendanceList()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="attendance-list">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll No</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas-overlay');
+        let ctx = canvas.getContext('2d');
+        let mediaStream = null;
+        let faceDetectionInterval = null;
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        // Start camera
+        document.getElementById('startCamera').addEventListener('click', async () => {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                video.srcObject = mediaStream;
+                
+                // Wait for video to be loaded
+                await new Promise(resolve => {
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        resolve();
+                    };
+                });
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Start face detection
+                faceDetectionInterval = setInterval(detectFaces, 100);
+                showToast('Camera started successfully');
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                showToast('Error accessing camera. Please make sure camera permissions are granted.', 'danger');
+            }
+        });
+
+        // Stop camera
+        document.getElementById('stopCamera').addEventListener('click', () => {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                clearInterval(faceDetectionInterval);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                showToast('Camera stopped');
+            }
+        });
+
+        // Take attendance
+        document.getElementById('takeAttendance').addEventListener('click', async () => {
+            if (!mediaStream) {
+                showToast('Please start the camera first', 'warning');
+                return;
+            }
+
+            try {
+                const frame = await getVideoFrame();
+                
+                const response = await fetch('/take_attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ frame: frame })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast(data.message);
+                    updateAttendanceList();
+                    
+                    // Update activity panel if it exists (parent window)
+                    if (window.parent && window.parent.loadActivityData) {
+                        window.parent.loadActivityData();
+                    }
+
+                    // Automatically stop the camera after successful attendance
+                    document.getElementById('stopCamera').click();
+                } else {
+                    showToast(data.message, 'warning');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error recording attendance', 'danger');
+            }
+        });
+
+        // Get video frame as base64
+        async function getVideoFrame() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            return canvas.toDataURL('image/jpeg').split(',')[1];
+        }
+
+        // Detect faces
+        async function detectFaces() {
+            if (!video.srcObject) return;
+
+            try {
+                const frame = await getVideoFrame();
+                
+                const response = await fetch('/detect_faces', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ frame: frame })
+                });
+
+                const data = await response.json();
+                // Remove face box drawing since we don't need visual feedback
+            } catch (error) {
+                console.error('Error detecting faces:', error);
+            }
+        }
+
+        // Update attendance list
+        function updateAttendanceList() {
+            fetch('/get_today_attendance')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('attendanceList');
+                        tbody.innerHTML = '';
+                        data.attendance.forEach(record => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${record.name}</td>
+                                    <td>${record.roll_no}</td>
+                                    <td>${record.timestamp}</td>
+                                    <td><span class="badge bg-success">Present</span></td>
+                                </tr>
+                            `;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading attendance:', error));
+        }
+
+        // Initial load of attendance list
+        updateAttendanceList();
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html> 

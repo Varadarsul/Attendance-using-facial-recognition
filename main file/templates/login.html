@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - A C Patil College of Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2;
+            --secondary-color: #2196F3;
+            --accent-color: #64B5F6;
+            --background-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .login-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .login-body {
+            padding: 2rem;
+        }
+        
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-login {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-login:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .login-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-option {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .login-option.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .login-option:hover {
+            transform: translateY(-2px);
+        }
+        
+        .login-option i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>A C Patil College of Engineering</h1>
+                <p class="mb-0">Attendance System</p>
+            </div>
+            <div class="login-body">
+                <div class="alert alert-danger" id="errorAlert"></div>
+                <div class="login-options">
+                    <div class="login-option active" data-role="admin">
+                        <i class="bi bi-shield-lock"></i>
+                        <div>Admin</div>
+                    </div>
+                    <div class="login-option" data-role="teacher">
+                        <i class="bi bi-person-badge"></i>
+                        <div>Teacher</div>
+                    </div>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginOptions = document.querySelectorAll('.login-option');
+            const loginForm = document.getElementById('loginForm');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            loginOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    loginOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+            
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorAlert.style.display = 'none';
+                
+                const role = document.querySelector('.login-option.active').dataset.role;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            role,
+                            username,
+                            password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        window.location.href = data.redirect;
+                    } else {
+                        errorAlert.textContent = data.message || 'Invalid credentials';
+                        errorAlert.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    errorAlert.textContent = 'Error during login. Please try again.';
+                    errorAlert.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
