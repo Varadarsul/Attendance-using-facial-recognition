@@ -78,23 +78,35 @@ This project is an automated attendance system developed in **Python**, where at
 ## Screenshots
 
 ### Registration Page
-![User Management](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/user%20management.png?token=BCRWHCABP36TDJ6L3Y6WTSLIBYG4U)
+## Screenshots
 
-![Admin Panel](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/admin%20panel.png?token=BCRWHCBZHR2HXJHENZQVUSLIBYG4S)
+### User Management
+![User Management](screenshots/user%20management.png)
 
-![Attendance report](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/attendance%20report.png?token=BCRWHCFAFYOVE5YYJQBAVTTIBYG4S)
-## Screenshots
-![Input Image](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/input%20image.png?token=BCRWHCGMWGDOJBPKKBC3GV3IBYG4S)
-## Screenshots
-![Login Page](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/login.png?token=BCRWHCAMO4NKAYMWAQVRZJTIBYG4U)
-## Screenshots
-![Marked Attendance](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/marked%20attendance%20of%20input%20image.png?token=BCRWHCCTIZFB3D2NKZWMWFDIBYG4U)
-## Screenshots
-![Register student](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/register%20student.png?token=BCRWHCBO6JSBDUWAZ6DWTBLIBYG4U)
-## Screenshots
-![Take Attendance](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/take%20attendance.png?token=BCRWHCA6K7MIH6RFH3TXVO3IBYG4U)
-## Screenshots
-![Upload Image](https://raw.githubusercontent.com/Varadarsul/Attendance-using-facial-recognition/79eb1ae2b44373faefe56aebf0f5cbbb523b5167/upload%20image%20for%20marking%20attendance.png?token=BCRWHCF3MFPGKWWVT6ZEP7LIBYG4U)
+### Admin Panel
+![Admin Panel](screenshots/screenshots/admin%20panel.png)
+
+### Attendance Report
+![Attendance Report](screenshots/attendance%20report.png)
+
+### Input Image
+![Input Image](screenshots/input%20image.png)
+
+### Login Page
+![Login Page](screenshots/login.png)
+
+### Marked Attendance
+![Marked Attendance](screenshots/marked%20attendance%20of%20input%20image.png)
+
+### Register Student
+![Register Student](screenshots/register%20student.png)
+
+### Take Attendance
+![Take Attendance](screenshots/take%20attendance.png)
+
+### Upload Image for Marking Attendance
+![Upload Image](screenshots/upload%20image%20for%20marking%20attendance.png)
+
 
 ## Future Improvements
 
