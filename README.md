@@ -42,27 +42,14 @@ This project is an automated attendance system developed in **Python**, where at
 4. **Attendance Storage**:
    - Attendance is saved in CSV files, with date, subject, and present/absent status.
 
-## Folder Structure
-
-```
-Attendance-System/
-├── dataset/         # Stores student images
-├── trained_data/    # Stores face encodings
-├── attendance/      # CSV files storing attendance records
-├── static/          # (Optional) CSS/Images for web frontend
-├── templates/       # (Optional) HTML files for Flask app
-├── app.py           # Main application file
-├── train_model.py   # Script to train face encodings
-├── mark_attendance.py  # Script to recognize faces and mark attendance
-└── README.md        # Project documentation
 ```
 
 ## Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/attendance-system-facial-recognition.git
-   cd attendance-system-facial-recognition
+   git clone https://github.com/Varadarsul/Attendance-using-facial-recognition.git
+   cd Attendance-using-facial-recognition
    ```
 
 2. **Install required libraries**
